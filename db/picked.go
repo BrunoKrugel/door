@@ -1,76 +1,47 @@
 package db
 
 import (
-	"strconv"
+	"log"
 
-	"github.com/hashicorp/go-memdb"
+	"github.com/arriqaaq/flashdb"
 )
 
-type Card struct {
-	ID int
-}
-
-var mydb *memdb.MemDB
+var mydb *flashdb.FlashDB
 
 func Init() {
-	if mydb != nil {
-		return
-	}
-
-	// Create the DB schema
-	schema := &memdb.DBSchema{
-		Tables: map[string]*memdb.TableSchema{
-			"card": {
-				Name: "card",
-				Indexes: map[string]*memdb.IndexSchema{
-					"id": {
-						Name:    "id",
-						Unique:  true,
-						Indexer: &memdb.StringFieldIndex{Field: "ID"},
-					},
-				},
-			},
-		},
-	}
-	// Create a new data base
-	db, err := memdb.NewMemDB(schema)
+	config := &flashdb.Config{Path: "", EvictionInterval: 10}
+	db, err := flashdb.New(config)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	mydb = db
 }
 
-func GetDb() *memdb.MemDB {
+func Get() *flashdb.FlashDB {
 	return mydb
 }
 
-func Write(index int) error {
-	db := mydb
-	txn := db.Txn(true)
-
-	card := []*Card{
-		{index},
-	}
-	for _, p := range card {
-		if err := txn.Insert("card", p); err != nil {
-			return err
-		}
-	}
-	txn.Commit()
-	return nil
+func Close() {
+	mydb.Close()
 }
 
-func Read(index int) error {
-	db := mydb
-	txn := db.Txn(false)
-	defer txn.Abort()
-
-	raw, err := txn.First("card", "id", strconv.Itoa(index))
-	if err != nil {
+func Update(key string, value string) error {
+	err := mydb.Update(func(tx *flashdb.Tx) error {
+		err := tx.Set(key, value)
 		return err
-	}
-	if raw == nil {
+	})
+	return err
+}
+
+func Read(key string) (string, error) {
+	var value string
+	err := mydb.View(func(tx *flashdb.Tx) error {
+		val, err := tx.Get(key)
+		if err != nil {
+			return err
+		}
+		value = val
 		return nil
-	}
-	return nil
+	})
+	return value, err
 }

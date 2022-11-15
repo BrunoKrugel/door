@@ -5,6 +5,12 @@ go 1.18
 require github.com/labstack/echo v3.3.10+incompatible
 
 require (
+	github.com/arriqaaq/aol v0.1.2 // indirect
+	github.com/arriqaaq/art v0.1.2 // indirect
+	github.com/arriqaaq/flashdb v0.1.6 // indirect
+	github.com/arriqaaq/hash v0.1.2 // indirect
+	github.com/arriqaaq/set v0.1.2 // indirect
+	github.com/arriqaaq/zset v0.1.2 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.0 // indirect
 	github.com/hashicorp/go-memdb v1.3.4 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
