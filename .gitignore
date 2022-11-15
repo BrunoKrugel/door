@@ -14,7 +14,7 @@ __debug_bin
 *.out
 
 # VsCode
-.vscode
+.vscode/
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
